@@ -1,5 +1,5 @@
-# :timer_clock: ReBench
-> A benchmarking package for ReasonML
+# :timer_clock: re:bench
+> Benchmarking for ReasonML
 
 *Status*: Usable ALPHA. The default announcer and cycle printers are not the
 most beautiful but they get the job done for now. Ideally in the future a
