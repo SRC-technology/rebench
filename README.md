@@ -46,9 +46,31 @@ let run = size =>
     |> add("ReStruct.BatchedQueue.tail", tail_batched_queue(size))
     |> add("ReStruct.BankersQueue.tail", tail_bankers_queue(size))
     |> add("ReStruct.Lazy.RealTimeQueue.tail", tail_realtime_queue(size))
-    |> on(Start, default_announcer(~size, ~name="Queue.Tail"))
-    |> on(Cycle, default_printer)
+    |> on(Start, Utils.default_announcer(~size, ~name="Queue.Tail"))
+    |> on(Cycle, Utils.default_printer)
     |> on(Complete, _e => Js.log("Done!"))
     |> run(run_opts(~async=false))
   );
+```
+
+Running this benchmark has the following output:
+
+```sh
+ostera/restruct λ make bench
+Benchmark: Queue.Tail (size: 10)
+ => ReStruct.BatchedQueue.tail - 365964 ops
+ => ReStruct.BankersQueue.tail - 5512905 ops
+ => ReStruct.Lazy.RealTimeQueue.tail - 3797100 ops
+
+Benchmark: Queue.Tail (size: 1000)
+ => ReStruct.BatchedQueue.tail - 3167 ops
+ => ReStruct.BankersQueue.tail - 5572714 ops
+ => ReStruct.Lazy.RealTimeQueue.tail - 3344608 ops
+
+Benchmark: Queue.Tail (size: 100000)
+ => ReStruct.BatchedQueue.tail - 12 ops
+ => ReStruct.BankersQueue.tail - 5365455 ops
+ => ReStruct.Lazy.RealTimeQueue.tail - 3057600 ops
+
+Done!
 ```
