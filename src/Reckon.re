@@ -10,6 +10,12 @@ type event_name =
   | Cycle
   | Complete;
 
+let event_to_string: event_name => string =
+  fun
+  | Start => "start"
+  | Cycle => "cycle"
+  | Complete => "complete";
+
 [@bs.deriving abstract]
 type target = {
   name: string,
@@ -40,19 +46,23 @@ module FFI = {
   [@bs.send] external __unsafe_run: (t, run_opts) => unit = "run";
 };
 
-module Utils = {
-  let event_to_string: event_name => string =
-    fun
-    | Start => "start"
-    | Cycle => "cycle"
-    | Complete => "complete";
-};
-
 let make = FFI.__unsafe_make;
 
 let on: (event_name, handler, t) => t =
-  (n, h, s) => FFI.__unsafe_on(s, Utils.event_to_string(n), h);
+  (n, h, s) => FFI.__unsafe_on(s, event_to_string(n), h);
 
 let add: (string, noop, t) => t = (n, f, s) => FFI.__unsafe_add(s, n, f);
 
 let run: (run_opts, t) => unit = (o, s) => FFI.__unsafe_run(s, o);
+
+module Utils = {
+  let default_announcer = (~size, ~name, _e) =>
+    Js.log({j|Benchmark: $name (size: $size)|j});
+
+  let default_printer = e => {
+    let t = targetGet(e);
+    let name = nameGet(t);
+    let count = countGet(t);
+    Js.log({j| => $name - $count ops|j});
+  };
+};
