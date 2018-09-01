@@ -1,6 +1,6 @@
 {
-  "name": "@ostera/reckon",
-  "version": "0.0.3",
+  "name": "@ostera/rebench",
+  "version": "0.0.1-alpha",
   "author": "Leandro Ostera <leandro@ostera.io>",
   "license": "MIT",
   "devDependencies": {

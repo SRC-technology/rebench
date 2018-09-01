@@ -1,4 +1,4 @@
-# :timer_clock: Reckon
+# :timer_clock: ReBench
 > A benchmarking package for ReasonML
 
 *Status*: Usable ALPHA. The default announcer and cycle printers are not the
@@ -11,7 +11,7 @@ this was the minimum I needed to start benchmarking some code.
 Begin by adding the package to your dev dependencies:
 
 ```sh
-ostera/reactor λ yarn add @ostera/reckon --dev
+ostera/reactor λ yarn add rebench --dev
 ```
 
 And including it in your `bsconfig.json` file too:
@@ -21,7 +21,7 @@ And including it in your `bsconfig.json` file too:
   // ...
   "suffix": ".bs.js",
   "bs-dependencies": [
-    "reckon",
+    "rebench",
   ],
   "warnings": {
     "error" : "+101"
@@ -34,14 +34,14 @@ Now you're good! Make sure to run `bsb -make-world` :)
 
 ## Writting Benchmarks
 
-You begin by creating a `Reckon` suite with `Reckon.make()`. To that suite you
+You begin by creating a `ReBench` suite with `ReBench.make()`. To that suite you
 can add as many test cases as you feel like with `add(name, test_case, suite)`.
 This makes it possible to chain your calls and provides a very fluent API for
 writting the benchmarks.
 
 ```reason
 let run = size =>
-  Reckon.(
+  ReBench.(
     make()
     |> add("ReStruct.BatchedQueue.tail", tail_batched_queue(size))
     |> add("ReStruct.BankersQueue.tail", tail_bankers_queue(size))
