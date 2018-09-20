@@ -1,5 +1,4 @@
-/**
-  Benchmark bindings for Reason.
+/** Benchmark bindings for Reason.
 
   This package includes a very light, idiomatic API on top of the well-known
   benchmarking library for node.js
