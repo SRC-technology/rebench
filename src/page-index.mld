@@ -14,9 +14,9 @@ Here's a sample benchmark suite comparing a variety of reverse functions:
 {[
 ReBench.(
   make()
-  |> add("Belt.Array.reverse", reverse_array)
-  |> add("Belt.List.reverse", reverse_strict_list)
-  |> add("ReStruct.Lazy.List.reverse", reverse_lazy_list)
+  |> add({ desc: "Belt.Array.reverse", bench: reverse_array })
+  |> add({ desc: "Belt.List.reverse", bench: reverse_strict_list })
+  |> add({ desc: "ReStruct.Lazy.List.reverse", bench: reverse_lazy_list })
   |> on(Start, Utils.default_announcer(~size, ~name="List.reverse"))
   |> on(Cycle, Utils.default_printer)
   |> on(Complete, _e => Js.log("Complete!"))
