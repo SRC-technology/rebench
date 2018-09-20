@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"><head><title>index (ReBench.index)</title><link rel="stylesheet" href="../odoc.css"/><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><script src="../highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="content"><header><nav><a href="..">Up</a> – <a href="../">ReBench</a> &#x00BB; index</nav></header><h2 id="top"><a href="#top" class="anchor"></a>⏲ re:bench</h2><p><code>status: usable ALPHA</code>.</p><p>ReBench is an idiomatic ReasonML wrapper around the <a href="https://benchmarkjs.com/"><code>benchmark</code></a> node package.</p><p>It provides a comfortable API that makes it easy to programmatically prepare benchmark cases leveraging type-safety, making your refactors immediately show up what benchmarks need some refactoring.</p><p>Here's a sample benchmark suite comparing a variety of reverse functions:</p><pre><code class="ml">ReBench.(
   make()
-  |&gt; add(&quot;Belt.Array.reverse&quot;, reverse_array)
-  |&gt; add(&quot;Belt.List.reverse&quot;, reverse_strict_list)
-  |&gt; add(&quot;ReStruct.Lazy.List.reverse&quot;, reverse_lazy_list)
+  |&gt; add({ desc: &quot;Belt.Array.reverse&quot;, bench: reverse_array })
+  |&gt; add({ desc: &quot;Belt.List.reverse&quot;, bench: reverse_strict_list })
+  |&gt; add({ desc: &quot;ReStruct.Lazy.List.reverse&quot;, bench: reverse_lazy_list })
   |&gt; on(Start, Utils.default_announcer(~size, ~name=&quot;List.reverse&quot;))
   |&gt; on(Cycle, Utils.default_printer)
   |&gt; on(Complete, _e =&gt; Js.log(&quot;Complete!&quot;))
