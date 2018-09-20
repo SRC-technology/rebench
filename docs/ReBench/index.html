@@ -1,2 +1,51 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>index (ReBench.index)</title><link rel="stylesheet" href="../odoc.css"/><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><script src="../highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="content"><header><nav><a href="..">Up</a> – <a href="../">ReBench</a> &#x00BB; index</nav></header><p>ReBench</p><ul><li><a href="ReBench"><code>ReBench</code></a></li></ul></div></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>index (ReBench.index)</title><link rel="stylesheet" href="../odoc.css"/><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><script src="../highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script></head><body><div class="content"><header><nav><a href="..">Up</a> – <a href="../">ReBench</a> &#x00BB; index</nav></header><h2 id="top"><a href="#top" class="anchor"></a>ReBench</h2><p>ReBench is an idiomatic ReasonML wrapper around the <a href="https://benchmarkjs.com/"><code>benchmark</code></a> node package.</p><p>It provides a comfortable API that makes it easy to programmatically prepare benchmark cases leveraging type-safety, making your refactors immediately show up what benchmarks need some refactoring.</p><p>Here's a sample benchmark suite comparing a variety of reverse functions:</p><pre><code class="ml">ReBench.(
+  make()
+  |&gt; add(&quot;Belt.Array.reverse&quot;, reverse_array)
+  |&gt; add(&quot;Belt.List.reverse&quot;, reverse_strict_list)
+  |&gt; add(&quot;ReStruct.Lazy.List.reverse&quot;, reverse_lazy_list)
+  |&gt; on(Start, Utils.default_announcer(~size, ~name=&quot;List.reverse&quot;))
+  |&gt; on(Cycle, Utils.default_printer)
+  |&gt; on(Complete, _e =&gt; Js.log(&quot;Complete!&quot;))
+  |&gt; run({ async: false })
+);</code></pre><h3 id="getting-started"><a href="#getting-started" class="anchor"></a>Getting Started</h3><p>Before we begin let's remember that micro-benchmarking <i>can be misleading</i>. So keep this in mind when defining and running benchmarks! Alright, moving on.</p><p>The first thing we need to do is to create a <a href="ReBench#type-t"><code>ReBench.t</code></a> — this value will be our benchmark suite and will be built up by adding <a href="ReBench#type-case"><code>ReBench.case</code></a>s and <a href="ReBench#type-handler"><code>ReBench.handler</code></a>s.</p><pre><code class="ml">let mySuite = ReBench.make();</code></pre><p>Great! Now we can use this suite and add a case:</p><pre><code class="ml">mySuite |&gt; ReBench.add({
+  desc: &quot;Js.log&quot;,
+  bench: () =&gt; Js.log(&quot;how fast can we print?&quot;)
+});</code></pre><p>This will return the same bench suite so you can chain adding multiple cases:</p><pre><code class="ml">mySuite
+|&gt; ReBench.add({
+     desc: &quot;Js.log&quot;,
+     bench: () =&gt; Js.log(&quot;how fast can we print?&quot;)
+   })
+|&gt; ReBench.add({
+     desc: &quot;print_string&quot;,
+     bench: () =&gt; print_string(&quot;how fast can we print?&quot;)
+   })
+|&gt; ReBench.add({
+     desc: &quot;prerr_string&quot;,
+     bench: () =&gt; prerr_string(&quot;how fast can we print?&quot;)
+   });</code></pre><p>This can easily grow fairly large, but we can use <code>List.fold_left</code> or <code>List.fold_right</code> from the standard library to take a list of <a href="ReBench#type-case"><code>ReBench.case</code></a> records and add them all. Leaving this as an exercise for you 👍🏼</p><p>For now let's abbreviate this by giving names to each benchmark case.</p><pre><code class="ml">let jsLog = ReBench.{desc: &quot;Js.log&quot;, bench: () =&gt; Js.log(&quot;&quot;)};
+let printString =
+  ReBench.{desc: &quot;print_string&quot;, bench: () =&gt; print_string(&quot;&quot;)};
+let prerrString =
+  ReBench.{desc: &quot;prerr_string&quot;, bench: () =&gt; prerr_string(&quot;&quot;)};
+
+mySuite
+|&gt; ReBench.add(jsLog)
+|&gt; ReBench.add(printString)
+|&gt; ReBench.add(prerrString);</code></pre><p>Much nicer. Unfortunately adding cases isn't worth much if we don't run them! Let's try that:</p><pre><code class="ml">mySuite
+|&gt; ReBench.add(jsLog)
+|&gt; ReBench.add(printString)
+|&gt; ReBench.add(prerrString)
+|&gt; ReBench.run({ async: false });</code></pre><p>And now our application should take some time to run, printing an unreasonable amount of empty lines in your terminal, and then finish.</p><p>To make sense of what just happened, we can attach some event handlers with <a href="ReBench#val-on"><code>ReBench.on</code></a> to be able to print out which benchmark was the fastest, or how many operations each one managed to run.</p><p>For this I will use the utility announcer (found in <a href="ReBench/Utils#val-default_announcer"><code>ReBench.Utils.default_announcer</code></a>), that will show the name of the suite as it begins and an optional size number, and the utility printer (found in <a href="ReBench/Utils#val-default_printer"><code>ReBench.Utils.default_printer</code></a>) that for each case will print it's name and the amount of operations performed.</p><pre><code class="ml">mySuite
+|&gt; ReBench.add(jsLog)
+|&gt; ReBench.add(printString)
+|&gt; ReBench.add(prerrString)
+|&gt; on(Start, ReBench.Utils.default_announcer(~size=1, ~name=&quot;Log functions&quot;))
+|&gt; on(Cycle, ReBench.Utils.default_printer)
+|&gt; ReBench.run({ async: false });</code></pre><p>Now after all the empty lines you will see a small summary that looks like this:</p><pre><code class="ml">ostera/rebench λ node ./lib/js/examples/Example_Log.bs.js
+
+# an unreasonable amount of empty lines later
+
+=&gt; Js.log - 5454 ops
+=&gt; print_string - 17027 ops
+=&gt; prerr_string - 1045363 ops</code></pre><p>And that's it! We've got our first benchmark.</p></div></body></html>

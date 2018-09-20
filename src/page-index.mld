@@ -1,3 +1,130 @@
-ReBench 
+{2:top ReBench}
 
-{!modules:ReBench}
+ReBench is an idiomatic ReasonML wrapper around the
+{{:https://benchmarkjs.com/}[benchmark]} node package.
+
+It provides a comfortable API that makes it easy to programmatically prepare
+benchmark cases leveraging type-safety, making your refactors immediately show
+up what benchmarks need some refactoring.
+
+Here's a sample benchmark suite comparing a variety of reverse functions:
+
+{[
+ReBench.(
+  make()
+  |> add("Belt.Array.reverse", reverse_array)
+  |> add("Belt.List.reverse", reverse_strict_list)
+  |> add("ReStruct.Lazy.List.reverse", reverse_lazy_list)
+  |> on(Start, Utils.default_announcer(~size, ~name="List.reverse"))
+  |> on(Cycle, Utils.default_printer)
+  |> on(Complete, _e => Js.log("Complete!"))
+  |> run({ async: false })
+);
+]}
+
+{3:getting-started Getting Started}
+
+Before we begin let's remember that micro-benchmarking {i can be misleading}. So
+keep this in mind when defining and running benchmarks! Alright, moving on.
+
+The first thing we need to do is to create a {!ReBench.t} — this value will be
+our benchmark suite and will be built up by adding {!ReBench.case}s and
+{!ReBench.handler}s.
+
+{[
+let mySuite = ReBench.make();
+]}
+
+Great! Now we can use this suite and add a case:
+
+{[
+mySuite |> ReBench.add({
+  desc: "Js.log",
+  bench: () => Js.log("how fast can we print?")
+});
+]}
+
+This will return the same bench suite so you can chain adding multiple cases:
+
+{[
+mySuite
+|> ReBench.add({
+     desc: "Js.log",
+     bench: () => Js.log("how fast can we print?")
+   })
+|> ReBench.add({
+     desc: "print_string",
+     bench: () => print_string("how fast can we print?")
+   })
+|> ReBench.add({
+     desc: "prerr_string",
+     bench: () => prerr_string("how fast can we print?")
+   });
+]}
+
+This can easily grow fairly large, but we can use [List.fold_left] or
+[List.fold_right] from the standard library to take a list of {!ReBench.case}
+records and add them all. Leaving this as an exercise for you 👍🏼
+
+For now let's abbreviate this by giving names to each benchmark case.
+
+{[
+let jsLog = ReBench.{desc: "Js.log", bench: () => Js.log("")};
+let printString =
+  ReBench.{desc: "print_string", bench: () => print_string("")};
+let prerrString =
+  ReBench.{desc: "prerr_string", bench: () => prerr_string("")};
+
+mySuite
+|> ReBench.add(jsLog)
+|> ReBench.add(printString)
+|> ReBench.add(prerrString);
+]}
+
+Much nicer. Unfortunately adding cases isn't worth much if we don't run them!
+Let's try that:
+
+{[
+mySuite
+|> ReBench.add(jsLog)
+|> ReBench.add(printString)
+|> ReBench.add(prerrString)
+|> ReBench.run({ async: false });
+]}
+
+And now our application should take some time to run, printing an unreasonable
+amount of empty lines in your terminal, and then finish.
+
+To make sense of what just happened, we can attach some event handlers with
+{!ReBench.on} to be able to print out which benchmark was the fastest, or how
+many operations each one managed to run.
+
+For this I will use the utility announcer (found in
+{!ReBench.Utils.default_announcer}), that will show the name of the suite
+as it begins and an optional size number, and the utility printer (found in
+{!ReBench.Utils.default_printer}) that for each
+case will print it's name and the amount of operations performed.
+
+{[
+mySuite
+|> ReBench.add(jsLog)
+|> ReBench.add(printString)
+|> ReBench.add(prerrString)
+|> on(Start, ReBench.Utils.default_announcer(~size=1, ~name="Log functions"))
+|> on(Cycle, ReBench.Utils.default_printer)
+|> ReBench.run({ async: false });
+]}
+
+Now after all the empty lines you will see a small summary that looks like this:
+
+{[
+ostera/rebench λ node ./lib/js/examples/Example_Log.bs.js
+
+# an unreasonable amount of empty lines later
+
+=> Js.log - 5454 ops
+=> print_string - 17027 ops
+=> prerr_string - 1045363 ops
+]}
+
+And that's it! We've got our first benchmark.
