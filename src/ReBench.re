@@ -1,16 +1,16 @@
-/**
-  The Abstract FFI type representing a Suite
-*/
 type t;
 
-type noop = unit => unit;
+type case = {
+  desc: string,
+  test: unit => unit,
+};
 
 type event_name =
   | Start
   | Cycle
   | Complete;
 
-let event_to_string: event_name => string =
+let event_to_string =
   fun
   | Start => "start"
   | Cycle => "cycle"
@@ -30,8 +30,6 @@ type event = {
 
 type handler = event => unit;
 
-type case = (string, noop);
-
 [@bs.deriving abstract]
 type run_opts = {async: bool};
 
@@ -39,7 +37,7 @@ module FFI = {
   [@bs.module "benchmark"] [@bs.new]
   external __unsafe_make: unit => t = "Suite";
 
-  [@bs.send] external __unsafe_add: (t, string, noop) => t = "add";
+  [@bs.send] external __unsafe_add: (t, string, unit => unit) => t = "add";
 
   [@bs.send] external __unsafe_on: (t, string, handler) => t = "on";
 
@@ -48,12 +46,11 @@ module FFI = {
 
 let make = FFI.__unsafe_make;
 
-let on: (event_name, handler, t) => t =
-  (n, h, s) => FFI.__unsafe_on(s, event_to_string(n), h);
+let on = (n, h, s) => FFI.__unsafe_on(s, event_to_string(n), h);
 
-let add: (string, noop, t) => t = (n, f, s) => FFI.__unsafe_add(s, n, f);
+let add = (c, s) => FFI.__unsafe_add(s, c.desc, c.test);
 
-let run: (run_opts, t) => unit = (o, s) => FFI.__unsafe_run(s, o);
+let run = (o, s) => FFI.__unsafe_run(s, o);
 
 module Utils = {
   let default_announcer = (~size, ~name, _e) =>
