@@ -1,5 +1,7 @@
 {2:top ReBench}
 
+[status: usable ALPHA].
+
 ReBench is an idiomatic ReasonML wrapper around the
 {{:https://benchmarkjs.com/}[benchmark]} node package.
 
@@ -26,7 +28,7 @@ ReBench.(
 
 {!modules:ReBench}
 
-{3:getting-started Getting Started}
+{3:writing-benchmarks Writing Benchmarks}
 
 Before we begin let's remember that micro-benchmarking {i can be misleading}. So
 keep this in mind when defining and running benchmarks! Alright, moving on.
