@@ -22,6 +22,10 @@ ReBench.(
 );
 ]}
 
+{3:catalog List of Modules}
+
+{!modules:ReBench}
+
 {3:getting-started Getting Started}
 
 Before we begin let's remember that micro-benchmarking {i can be misleading}. So
