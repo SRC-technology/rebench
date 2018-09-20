@@ -2,7 +2,7 @@ type t;
 
 type case = {
   desc: string,
-  test: unit => unit,
+  bench: unit => unit,
 };
 
 type event_name =
@@ -71,7 +71,7 @@ let make = FFI.__unsafe_make;
 let on = (n, h, s) =>
   FFI.__unsafe_on(s, event_to_string(n), e => FFI.to_event(e) |> h);
 
-let add = (c, s) => FFI.__unsafe_add(s, c.desc, c.test);
+let add = (c, s) => FFI.__unsafe_add(s, c.desc, c.bench);
 
 let run = (o, s) => FFI.(to_run_opts(o) |> __unsafe_run(s));
 

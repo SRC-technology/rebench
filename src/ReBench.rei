@@ -7,7 +7,7 @@
   */;
 
 /**
-  The test suite type.
+  The benchmark suite type.
 
   Since this is the type used in the boundaries with the JS library, it is kept
   abstract.
@@ -15,26 +15,27 @@
 type t;
 
 /**
-  The test case type.
+  The benchmark case type.
 
-  A test case consists of a description and a function that will execute it.
+  A benchmark case consists of a description and a function that will be
+  benchmarked.
   */
 type case = {
   /** The description of the test case, such as "Array.map" */
   desc: string,
-  /** The actual test function */
-  test: unit => unit,
+  /** The actual function to benchmark */
+  bench: unit => unit,
 };
 
 /**
   The events available to add handlers to.
   */
 type event_name =
-  | /** Triggered when the the test suite will begin to evaluate the cases. */
+  | /** Triggered when the suite will begin to evaluate the cases.          */
     Start
-  | /** Triggered every time a test case finishes.                          */
+  | /** Triggered every time a benchmark case finishes.                     */
     Cycle
-  | /** Triggered when the the test suite finishes evaluating the cases.    */
+  | /** Triggered when the suite finishes evaluating the cases.             */
     Complete;
 
 /**
@@ -62,12 +63,12 @@ type handler = event => unit;
   Options to run an event suite.
   */
 type run_opts = {
-  /** Whether this test suite should run synchronously or not */
+  /** Whether this benchmark suite should run synchronously or not */
   async: bool,
 };
 
 /**
-  Create a new test suite.
+  Create a new benchmark suite.
   */
 let make: unit => t;
 
@@ -77,12 +78,12 @@ let make: unit => t;
 let on: (event_name, handler, t) => t;
 
 /**
-  Add a test case to a test suite.
+  Add a benchmarking case to a suite.
   */
 let add: (case, t) => t;
 
 /**
-  Run a test suite!
+  Run a benchmark suite!
   */
 let run: (run_opts, t) => unit;
 
