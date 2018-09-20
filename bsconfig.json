@@ -3,10 +3,13 @@
 {
   "name": "@ostera/rebench",
   "version": "0.0.1-alpha",
-  "sources": {
+  "sources": [{
     "dir" : "src",
     "subdirs" : true
-  },
+  }, {
+    "dir" : "examples",
+    "subdirs" : true
+  }],
   "package-specs": {
     "module": "commonjs",
     "in-source": false
