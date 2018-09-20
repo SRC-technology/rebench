@@ -36,13 +36,15 @@ mySuite
 |&gt; ReBench.add(jsLog)
 |&gt; ReBench.add(printString)
 |&gt; ReBench.add(prerrString)
-|&gt; ReBench.run({ async: false });</code></pre><p>And now our application should take some time to run, printing an unreasonable amount of empty lines in your terminal, and then finish.</p><p>To make sense of what just happened, we can attach some event handlers with <a href="ReBench#val-on"><code>ReBench.on</code></a> to be able to print out which benchmark was the fastest, or how many operations each one managed to run.</p><p>For this I will use the utility announcer (found in <a href="ReBench/Utils#val-default_announcer"><code>ReBench.Utils.default_announcer</code></a>), that will show the name of the suite as it begins and an optional size number, and the utility printer (found in <a href="ReBench/Utils#val-default_printer"><code>ReBench.Utils.default_printer</code></a>) that for each case will print it's name and the amount of operations performed.</p><pre><code class="ml">mySuite
-|&gt; ReBench.add(jsLog)
-|&gt; ReBench.add(printString)
-|&gt; ReBench.add(prerrString)
-|&gt; on(Start, ReBench.Utils.default_announcer(~size=1, ~name=&quot;Log functions&quot;))
-|&gt; on(Cycle, ReBench.Utils.default_printer)
-|&gt; ReBench.run({ async: false });</code></pre><p>Now after all the empty lines you will see a small summary that looks like this:</p><pre><code class="ml">ostera/rebench λ node ./lib/js/examples/Example_Log.bs.js
+|&gt; ReBench.run({ async: false });</code></pre><p>And now our application should take some time to run, printing an unreasonable amount of empty lines in your terminal, and then finish.</p><p>To make sense of what just happened, we can attach some event handlers with <a href="ReBench#val-on"><code>ReBench.on</code></a> to be able to print out which benchmark was the fastest, or how many operations each one managed to run.</p><p>For this I will use the utility announcer (found in <a href="ReBench/Utils#val-default_announcer"><code>ReBench.Utils.default_announcer</code></a>), that will show the name of the suite as it begins and an optional size number, and the utility printer (found in <a href="ReBench/Utils#val-default_printer"><code>ReBench.Utils.default_printer</code></a>) that for each case will print it's name and the amount of operations performed.</p><pre><code class="ml">ReBench.(
+  mySuite
+  |&gt; add(jsLog)
+  |&gt; add(printString)
+  |&gt; add(prerrString)
+  |&gt; on(Start, Utils.default_announcer(~size=1, ~name=&quot;Log functions&quot;))
+  |&gt; on(Cycle, Utils.default_printer)
+  |&gt; run({async: false})
+);</code></pre><p>Now after all the empty lines you will see a small summary that looks like this:</p><pre><code class="ml">ostera/rebench λ node ./lib/js/examples/Example_Log.bs.js
 
 # an unreasonable amount of empty lines later
 

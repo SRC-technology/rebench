@@ -112,13 +112,15 @@ as it begins and an optional size number, and the utility printer (found in
 case will print it's name and the amount of operations performed.
 
 {[
-mySuite
-|> ReBench.add(jsLog)
-|> ReBench.add(printString)
-|> ReBench.add(prerrString)
-|> on(Start, ReBench.Utils.default_announcer(~size=1, ~name="Log functions"))
-|> on(Cycle, ReBench.Utils.default_printer)
-|> ReBench.run({ async: false });
+ReBench.(
+  mySuite
+  |> add(jsLog)
+  |> add(printString)
+  |> add(prerrString)
+  |> on(Start, Utils.default_announcer(~size=1, ~name="Log functions"))
+  |> on(Cycle, Utils.default_printer)
+  |> run({async: false})
+);
 ]}
 
 Now after all the empty lines you will see a small summary that looks like this:

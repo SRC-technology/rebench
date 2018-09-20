@@ -6,13 +6,12 @@ let printString =
 let prerrString =
   ReBench.{desc: "prerr_string", bench: () => prerr_string("")};
 
-mySuite
-|> ReBench.add(jsLog)
-|> ReBench.add(printString)
-|> ReBench.add(prerrString)
-|> ReBench.on(
-     Start,
-     ReBench.Utils.default_announcer(~size=1, ~name="Log functions"),
-   )
-|> ReBench.on(Cycle, ReBench.Utils.default_printer)
-|> ReBench.run({async: false});
+ReBench.(
+  mySuite
+  |> add(jsLog)
+  |> add(printString)
+  |> add(prerrString)
+  |> on(Start, Utils.default_announcer(~size=1, ~name="Log functions"))
+  |> on(Cycle, Utils.default_printer)
+  |> run({async: false})
+);
